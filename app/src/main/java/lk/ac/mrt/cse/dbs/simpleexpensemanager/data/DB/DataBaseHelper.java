@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Created by smtt on 11/18/16.
@@ -23,18 +24,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String ACCOUNTHOLDERNAME_COLUMN = "accountHolderName";
     public  static final String BALANCE_COLUM = "balance";
 
-//    public static final String EMPLOYEE_DOB = "dob";
-//    public static final String EMPLOYEE_SALARY = "salary";
+
+    public static final String TRANSACTION_TABLE = "transactiontable";
+    public static final String DATE_COLUMN = "date";
+    public static final String EXPENSETYPE_COLUMN = "expenseType";
+    public  static final String AMOUNT_COLUMN = "amount";
+
+
 
     public static final String CREATE_ACCOUNT_TABLE = "CREATE TABLE "
             + ACCOUNT_TABLE + "(" + ACNO_COLUMN + " INTEGER PRIMARY KEY, "
             + BANKNAME_COLUMN + " TEXT, " +ACCOUNTHOLDERNAME_COLUMN + " TEXT, "+ BALANCE_COLUM+ " DOUBLE "
             + ")";
 
+
+    public static final String CREATE_TRANSACTION_TABLE = "CREATE TABLE "
+            + TRANSACTION_TABLE +"(" +"ID" + " INTEGER PRIMARY KEY  AUTOINCREMENT, "
+            + DATE_COLUMN + " DATE, " + ACNO_COLUMN + " TEXT, "
+            + EXPENSETYPE_COLUMN + " TEXT, "
+            + AMOUNT_COLUMN   + " DOUBLE " +")";
+
     private static DataBaseHelper instance;
 
     public static synchronized DataBaseHelper getHelper(Context context) {
-        if (instance == null)
+//        if (instance == null)
             instance = new DataBaseHelper(context);
         return instance;
     }
@@ -54,6 +67,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_ACCOUNT_TABLE);
+        db.execSQL(CREATE_TRANSACTION_TABLE);
     }
 
 

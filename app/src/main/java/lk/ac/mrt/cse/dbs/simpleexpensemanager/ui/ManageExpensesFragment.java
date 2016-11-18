@@ -33,14 +33,18 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.AccountDAOImple;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.TransactionDAOImpl;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
 
 import static lk.ac.mrt.cse.dbs.simpleexpensemanager.Constants.EXPENSE_MANAGER;
 /**
@@ -55,6 +59,7 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
     private ExpenseManager currentExpenseManager;
 
     private AccountDAOImple accountDAO;
+    private TransactionDAOImpl transactionDAO;
 
     public static ManageExpensesFragment newInstance(ExpenseManager expenseManager) {
         ManageExpensesFragment manageExpensesFragment = new ManageExpensesFragment();
@@ -114,9 +119,16 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
 
                 if (currentExpenseManager != null) {
                     try {
-                        currentExpenseManager.updateAccountBalance(selectedAccount, day, month, year,
-                                ExpenseType.valueOf(type.toUpperCase()), amountStr);
-                    } catch (InvalidAccountException e) {
+//                        currentExpenseManager.updateAccountBalance(selectedAccount, day, month, year,
+//                                ExpenseType.valueOf(type.toUpperCase()), amountStr);
+                        transactionDAO = new TransactionDAOImpl(getActivity());
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, month, day);
+                        Date transactionDate = calendar.getTime();
+                        Transaction transaction = new Transaction(transactionDate,selectedAccount,ExpenseType.valueOf(type.toUpperCase()), Double.parseDouble(amountStr));
+                        transactionDAO.addTransaction(transaction);
+
+                    } catch (Exception e) {
                         new AlertDialog.Builder(this.getActivity())
                                 .setTitle(this.getString(R.string.msg_account_update_unable) + selectedAccount)
                                 .setMessage(e.getMessage())
