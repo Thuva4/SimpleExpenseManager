@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,9 +32,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.AccountDAOImple;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 import static lk.ac.mrt.cse.dbs.simpleexpensemanager.Constants.EXPENSE_MANAGER;
@@ -48,11 +54,14 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
     private DatePicker datePicker;
     private ExpenseManager currentExpenseManager;
 
+    private AccountDAOImple accountDAO;
+
     public static ManageExpensesFragment newInstance(ExpenseManager expenseManager) {
         ManageExpensesFragment manageExpensesFragment = new ManageExpensesFragment();
         Bundle args = new Bundle();
         args.putSerializable(EXPENSE_MANAGER, expenseManager);
         manageExpensesFragment.setArguments(args);
+
         return manageExpensesFragment;
     }
 
@@ -70,9 +79,11 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
         currentExpenseManager = (ExpenseManager) getArguments().get(EXPENSE_MANAGER);
         ArrayAdapter<String> adapter =
                 null;
+        accountDAO = new AccountDAOImple(getActivity());
         if (currentExpenseManager != null) {
             adapter = new ArrayAdapter<>(this.getActivity(), R.layout.support_simple_spinner_dropdown_item,
-                    currentExpenseManager.getAccountNumbersList());
+                    accountDAO.getAllID());
+            Log.d(accountDAO.getAllID().toString(),"dsgs");
         }
         accountSelector.setAdapter(adapter);
 
