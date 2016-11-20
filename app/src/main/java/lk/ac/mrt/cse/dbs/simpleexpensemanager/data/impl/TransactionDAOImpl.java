@@ -81,7 +81,7 @@ public class TransactionDAOImpl implements TransactionDAO {
         return transactions;
     }
 
-    protected SQLiteDatabase database;
+    private SQLiteDatabase database;
     private DataBaseHelper dbHelper;
     private Context mContext;
     private Log log;
