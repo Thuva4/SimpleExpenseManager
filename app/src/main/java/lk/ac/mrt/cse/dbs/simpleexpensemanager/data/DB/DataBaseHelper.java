@@ -15,10 +15,12 @@ import java.util.StringTokenizer;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "expenseManagerDB";
+    private static final String DATABASE_NAME = "expenseManagerDB_140631X";
     private static final int DATABASE_VERSION = 1;
 
     public static final String ACCOUNT_TABLE = "account";
+
+
     public static final String ACNO_COLUMN = "accountNo";
     public static final String BANKNAME_COLUMN = "bankName";
     public static final String ACCOUNTHOLDERNAME_COLUMN = "accountHolderName";
@@ -32,22 +34,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
 
-    public static final String CREATE_ACCOUNT_TABLE = "CREATE TABLE "
-            + ACCOUNT_TABLE + "(" + ACNO_COLUMN + " INTEGER PRIMARY KEY, "
+    private static final String CREATE_ACCOUNT_TABLE = "CREATE TABLE "
+            + ACCOUNT_TABLE + "(" + ACNO_COLUMN + " TEXT PRIMARY KEY, "
             + BANKNAME_COLUMN + " TEXT, " +ACCOUNTHOLDERNAME_COLUMN + " TEXT, "+ BALANCE_COLUM+ " DOUBLE "
             + ")";
 
 
-    public static final String CREATE_TRANSACTION_TABLE = "CREATE TABLE "
+    private static final String CREATE_TRANSACTION_TABLE = "CREATE TABLE "
             + TRANSACTION_TABLE +"(" +"ID" + " INTEGER PRIMARY KEY  AUTOINCREMENT, "
             + DATE_COLUMN + " DATE, " + ACNO_COLUMN + " TEXT, "
             + EXPENSETYPE_COLUMN + " TEXT, "
             + AMOUNT_COLUMN   + " DOUBLE " +")";
 
     private static DataBaseHelper instance;
-
     public static synchronized DataBaseHelper getHelper(Context context) {
-//        if (instance == null)
             instance = new DataBaseHelper(context);
         return instance;
     }

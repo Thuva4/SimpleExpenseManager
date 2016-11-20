@@ -17,7 +17,7 @@
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.control;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +26,7 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.AccountDAOImple;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.TransactionDAOImpl;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
@@ -35,8 +36,11 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
  * method to setup the DAO objects depending on the implementation.
  */
 public abstract class ExpenseManager implements Serializable {
-    private AccountDAO accountsHolder;
-    private TransactionDAO transactionsHolder;
+//    private AccountDAO accountsHolder;
+//    private TransactionDAO transactionsHolder;
+
+    public TransactionDAOImpl transactionDAO;
+    public AccountDAOImple accountDAOImple;
 
     /***
      * Get list of account numbers as String.
@@ -44,40 +48,31 @@ public abstract class ExpenseManager implements Serializable {
      * @return
      */
     public List<String> getAccountNumbersList() {
-        return accountsHolder.getAccountNumbersList();
+        return accountDAOImple.getAccountNumbersList();
     }
 
     /***
      * Update the account balance.
      *
      * @param accountNo
-     * @param day
-     * @param month
-     * @param year
      * @param expenseType
      * @param amount
      * @throws InvalidAccountException
      */
-    public void updateAccountBalance(String accountNo, int day, int month, int year, ExpenseType expenseType,
-                                     String amount) throws InvalidAccountException {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
-        Date transactionDate = calendar.getTime();
-
-        if (!amount.isEmpty()) {
-            double amountVal = Double.parseDouble(amount);
-            transactionsHolder.logTransaction(transactionDate, accountNo, expenseType, amountVal);
-            accountsHolder.updateBalance(accountNo, expenseType, amountVal);
+    public void updateAccountBalance(Date date,String accountNo ,ExpenseType expenseType,
+                                     Double amount) throws InvalidAccountException {
+            transactionDAO.logTransaction(date, accountNo, expenseType, amount);
+            accountDAOImple.updateBalance(accountNo, expenseType, amount);
         }
-    }
+
 
     /***
      * Get a list of transaction logs.
      *
      * @return
      */
-    public List<Transaction> getTransactionLogs() {
-        return transactionsHolder.getPaginatedTransactionLogs(10);
+    public List<Transaction> getTransactionLogs() throws ParseException {
+        return transactionDAO.getPaginatedTransactionLogs(20);
     }
 
     /***
@@ -90,7 +85,7 @@ public abstract class ExpenseManager implements Serializable {
      */
     public void addAccount(String accountNo, String bankName, String accountHolderName, double initialBalance) {
         Account account = new Account(accountNo, bankName, accountHolderName, initialBalance);
-        accountsHolder.addAccount(account);
+        accountDAOImple.addAccount(account);
 
     }
 
@@ -100,7 +95,7 @@ public abstract class ExpenseManager implements Serializable {
      * @return
      */
     public AccountDAO getAccountsDAO() {
-        return accountsHolder;
+        return accountDAOImple;
     }
 
     /***
@@ -108,8 +103,8 @@ public abstract class ExpenseManager implements Serializable {
      *
      * @param accountDAO
      */
-    public void setAccountsDAO(AccountDAO accountDAO) {
-        this.accountsHolder = accountDAO;
+    public void setAccountsDAO(AccountDAOImple accountDAO) {
+        this.accountDAOImple= accountDAO;
     }
 
     /***
@@ -117,8 +112,8 @@ public abstract class ExpenseManager implements Serializable {
      *
      * @return
      */
-    public TransactionDAO getTransactionsDAO() {
-        return transactionsHolder;
+    public TransactionDAOImpl getTransactionsDAO() {
+        return transactionDAO;
     }
 
     /***
@@ -126,8 +121,8 @@ public abstract class ExpenseManager implements Serializable {
      *
      * @param transactionDAO
      */
-    public void setTransactionsDAO(TransactionDAO transactionDAO) {
-        this.transactionsHolder = transactionDAO;
+    public void setTransactionsDAO(TransactionDAOImpl transactionDAO) {
+        this.transactionDAO = transactionDAO;
     }
 
     /***

@@ -58,8 +58,8 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
     private DatePicker datePicker;
     private ExpenseManager currentExpenseManager;
 
-    private AccountDAOImple accountDAO;
-    private TransactionDAOImpl transactionDAO;
+//    private AccountDAOImple accountDAO;
+//    private TransactionDAOImpl transactionDAO;
 
     public static ManageExpensesFragment newInstance(ExpenseManager expenseManager) {
         ManageExpensesFragment manageExpensesFragment = new ManageExpensesFragment();
@@ -82,13 +82,10 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
         amount = (EditText) rootView.findViewById(R.id.amount);
         accountSelector = (Spinner) rootView.findViewById(R.id.account_selector);
         currentExpenseManager = (ExpenseManager) getArguments().get(EXPENSE_MANAGER);
-        ArrayAdapter<String> adapter =
-                null;
-        accountDAO = new AccountDAOImple(getActivity());
+        ArrayAdapter<String> adapter = null;
         if (currentExpenseManager != null) {
             adapter = new ArrayAdapter<>(this.getActivity(), R.layout.support_simple_spinner_dropdown_item,
-                    accountDAO.getAllID());
-            Log.d(accountDAO.getAllID().toString(),"dsgs");
+                    currentExpenseManager.accountDAOImple.getAccountNumbersList());
         }
         accountSelector.setAdapter(adapter);
 
@@ -118,27 +115,13 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
                 }
 
                 if (currentExpenseManager != null) {
-                    try {
-//                        currentExpenseManager.updateAccountBalance(selectedAccount, day, month, year,
-//                                ExpenseType.valueOf(type.toUpperCase()), amountStr);
-                        transactionDAO = new TransactionDAOImpl(getActivity());
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, month, day);
                         Date transactionDate = calendar.getTime();
-                        Transaction transaction = new Transaction(transactionDate,selectedAccount,ExpenseType.valueOf(type.toUpperCase()), Double.parseDouble(amountStr));
-                        transactionDAO.addTransaction(transaction);
-
-                    } catch (Exception e) {
-                        new AlertDialog.Builder(this.getActivity())
-                                .setTitle(this.getString(R.string.msg_account_update_unable) + selectedAccount)
-                                .setMessage(e.getMessage())
-                                .setNeutralButton(this.getString(R.string.msg_ok),
-                                        new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                    try {
+                        currentExpenseManager.updateAccountBalance(transactionDate,selectedAccount,ExpenseType.valueOf(type.toUpperCase()), Double.parseDouble(amountStr));
+                    } catch (InvalidAccountException e) {
+                        e.printStackTrace();
                     }
                 }
                 amount.getText().clear();
